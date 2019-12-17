@@ -1,5 +1,6 @@
 //paquetes necesarios para el proyecto
 var express = require('express');
+var controler = require('../servidor/controladores/controler');
 var bodyParser = require('body-parser');
 var cors = require('cors');
 
@@ -12,6 +13,8 @@ app.use(bodyParser.urlencoded({
 }));
 
 app.use(bodyParser.json());
+
+app.get('/peliculas', controler.peliculas );
 
 //seteamos el puerto en el cual va a escuchar los pedidos la aplicación
 var puerto = '8080';
