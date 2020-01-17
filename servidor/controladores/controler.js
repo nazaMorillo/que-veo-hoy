@@ -33,8 +33,24 @@ pelicula =(req, res)=>{
     });
 }
 
+generos =(req, res)=>{
+    // res.send('Esto va a funcionar bien!');
+    const consulta = "SELECT * FROM genero";
+    conexionbd.query(consulta, (err, result, fields)=>{
+        if(err){
+            console.log("Hubo un error en la consulta", err.menssage);
+            return res.status(404).send("Erro en la consulta ",err);
+        }else{
+            let response = {generos : result}
+            //res.send(JSON.stringify(result));
+            res.send(response);
+        }
+    });
+}
+
 
 module.exports={
-    peliculas:peliculas,
-    pelicula:pelicula
+    peliculas : peliculas,
+    pelicula : pelicula,
+    generos : generos
 };
