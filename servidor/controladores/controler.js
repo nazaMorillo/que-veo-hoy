@@ -2,8 +2,39 @@ let conexionbd = require('../lib/conexionbd');
 
 
 peliculas =(req, res)=>{
-    // res.send('Esto va a funcionar bien!');
-    const consulta = "SELECT * FROM pelicula LIMIT 20";
+    let titulo = req.query.titulo;
+    let anio = req.query.anio;
+    let genero = req.query.genero;
+    let columna_orden = req.query.columna_orden;
+    let tipo_orden = req.query.pagina;
+    let cantidad = req.query.cantidad;
+
+    let filtros = [];
+    let consulta = "SELECT * FROM pelicula LIMIT 20;";
+    let limite ="LIMIT 20";
+
+    if(titulo!== undefined){filtros.push("titulo LIKE '%" + titulo + "%'");}
+    if(anio!== undefined){filtros.push("anio = " + anio);}
+    if(genero!== undefined){filtros.push("genero_id = " + genero);}
+    let concat ="";
+
+    if(filtros.length > 0 ){
+        filtros.forEach(function(filtro, pos){
+            concat+=filtro+" ";
+            if(pos < filtros.length-1){
+                concat+="AND ";
+            }            
+            console.log(concat);
+        });
+
+        consulta = "SELECT * FROM pelicula WHERE "+concat+limite+";";
+        console.log(consulta);
+    }
+
+    
+    
+
+
     conexionbd.query(consulta, (err, result, fields)=>{
         if(err){
             console.log("Hubo un error en la consulta", err.menssage);
