@@ -67,11 +67,13 @@ function ControladorPeliculas() {
             //nombre de la columna por la que se va a ordenar - tipo de orden (descendente o ascendente)
             //aca se divide el value de la opcion seleccionada en dos campos, la columna orden y el tipo de orden
             var orden_array = orden.split("-");
+            
             query_params.columna_orden = orden_array[0];
             query_params.tipo_orden = orden_array[1];
+            // console.log(orden_array[1]);
 
             var query = $.param(query_params);
-
+            // console.log(query);
             //se hace el pedido al backend de las peliculas
             $.getJSON(servidor + "/peliculas?" + query,
                 function(data) {

@@ -6,12 +6,12 @@ peliculas =(req, res)=>{
     let anio = req.query.anio;
     let genero = req.query.genero;
     let columna_orden = req.query.columna_orden;
-    let tipo_orden = req.query.pagina;
+    let tipo_orden = req.query.tipo_orden;
     let cantidad = req.query.cantidad;
 
     let filtros = [];
-    let consulta = "SELECT * FROM pelicula LIMIT 20;";
-    let limite ="LIMIT 20";
+    let consulta = "SELECT * FROM pelicula ";
+    let limite ="LIMIT "+cantidad;
 
     if(titulo!== undefined){filtros.push("titulo LIKE '%" + titulo + "%'");}
     if(anio!== undefined){filtros.push("anio = " + anio);}
@@ -24,18 +24,19 @@ peliculas =(req, res)=>{
             if(pos < filtros.length-1){
                 concat+="AND ";
             }            
-            console.log(concat);
+            //console.log(concat);
         });
-
-        consulta = "SELECT * FROM pelicula WHERE "+concat+limite+";";
-        console.log(consulta);
+        consulta = "SELECT * FROM pelicula WHERE "+concat;
+        console.log(consulta); 
     }
 
-    
-    
-
-
-    conexionbd.query(consulta, (err, result, fields)=>{
+    // if(true){
+    //     //consulta+=" ORDER BY "+columna_ordern+" "+tipo_orden;
+    //     console.log(" ORDER BY "+columna_ordern+" "+tipo_orden);
+    // }
+    consulta += " ORDER BY "+columna_orden+" "+tipo_orden+" "+limite;
+    console.log(tipo_orden);
+    conexionbd.query(consulta+";", (err, result, fields)=>{
         if(err){
             console.log("Hubo un error en la consulta", err.menssage);
             return res.status(404).send("Erro en la consulta ",err);
