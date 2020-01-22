@@ -8,10 +8,11 @@ peliculas =(req, res)=>{
     let columna_orden = req.query.columna_orden;
     let tipo_orden = req.query.tipo_orden;
     let cantidad = req.query.cantidad;
+    let pagina = req.query.pagina;
 
     let filtros = [];
     let consulta = "SELECT * FROM pelicula ";
-    let limite ="LIMIT "+cantidad;
+    let limite ="LIMIT "+pagina+","+cantidad;
 
     if(titulo!== undefined){filtros.push("titulo LIKE '%" + titulo + "%'");}
     if(anio!== undefined){filtros.push("anio = " + anio);}
@@ -26,7 +27,7 @@ peliculas =(req, res)=>{
             }            
             //console.log(concat);
         });
-        consulta = "SELECT * FROM pelicula WHERE "+concat;
+        consulta += "WHERE "+concat;
         console.log(consulta); 
     }
 
@@ -35,7 +36,7 @@ peliculas =(req, res)=>{
     //     console.log(" ORDER BY "+columna_ordern+" "+tipo_orden);
     // }
     consulta += " ORDER BY "+columna_orden+" "+tipo_orden+" "+limite;
-    console.log(tipo_orden);
+    console.log(pagina);
     conexionbd.query(consulta+";", (err, result, fields)=>{
         if(err){
             console.log("Hubo un error en la consulta", err.menssage);
