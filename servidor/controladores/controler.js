@@ -17,32 +17,33 @@ peliculas =(req, res)=>{
     if(titulo!== undefined){filtros.push("titulo LIKE '%" + titulo + "%'");}
     if(anio!== undefined){filtros.push("anio = " + anio);}
     if(genero!== undefined){filtros.push("genero_id = " + genero);}
-    let concat ="";
+    let condition ="";
 
     if(filtros.length > 0 ){
         filtros.forEach(function(filtro, pos){
-            concat+=filtro+" ";
+            condition+=filtro+" ";
             if(pos < filtros.length-1){
-                concat+="AND ";
+                condition+="AND ";
             }            
-            //console.log(concat);
+            //console.log(condition);
         });
-        consulta += "WHERE "+concat;
+        consulta += "WHERE "+condition;
         console.log(consulta); 
     }
 
-    // if(true){
-    //     //consulta+=" ORDER BY "+columna_ordern+" "+tipo_orden;
-    //     console.log(" ORDER BY "+columna_ordern+" "+tipo_orden);
-    // }
     consulta += " ORDER BY "+columna_orden+" "+tipo_orden+" "+limite;
-    console.log(pagina);
+    console.log("Pagina: "+pagina);
     conexionbd.query(consulta+";", (err, result, fields)=>{
         if(err){
             console.log("Hubo un error en la consulta", err.menssage);
             return res.status(404).send("Erro en la consulta ",err);
         }else{
-            let response = {peliculas : result}
+            console.table(result.length);
+            // console.log("Fields: "+fields[0]);
+            let response = {
+                peliculas : result,
+                total : result.length
+            }
             //res.send(JSON.stringify(result));
             res.send(response);
         }
