@@ -15,7 +15,7 @@ app.use(bodyParser.urlencoded({
 app.use(bodyParser.json());
 
 app.get('/peliculas', controler.peliculas );
-app.get('/peliculas/:id', controler.peliculas );
+app.get('/peliculas/:id', controler.pelicula );
 //app.get('/peliculas/:id', controler.pelicula );
 app.get('/generos', controler.generos );
 
