@@ -46,40 +46,41 @@ peliculas =(req, res)=>{
     }
     if(pagina!== undefined && cantidad!== undefined){
         limite =" LIMIT "+((pagina-1)*cantidad)+", "+cantidad;
-        condicion +=" "+limite;
+        //condicion +=" "+limite;
         console.log("Pagina: "+pagina);
         console.log("Condicion: "+condicion);
     }
 
+    // guarda una consulta que devuelve el numero total de registros según condiciones de filtros seleccionados
+    // esto hace que se pueda mostrar de forma dinámica la cantidad de páginas que se necesita para mostrar
+    // el resultado todal de la consulta
     let consultaTotalRegistro = pedir+totalRegistro+deTabla+condicion;
-    // let countTotal = "SELECT COUNT(*) AS total FROM pelicula;";  
-    // conexionbd.query(consultaTotalRegistro+";", (err, result)=>{
-    //     if(err){
-    //         console.log("Hubo un error en la consulta de count", err);
-    //         return res.status(404).send("Error en la consulta de count ",err);
-    //     }else{ 
-    //         //total = JSON.stringify(result[0].titulo); // result[0].total;
-           
-    //         //totalPeliculas = result[0].total;
-                      
-    //         //console.log("Este es el total : "+totalPeliculas);
-    //     }
-    // });
+    conexionbd.query(consultaTotalRegistro+";", (err, result, fields)=>{
+        if(err){
+            console.log("Hubo un error en la consulta de count", err);
+            return res.status(404).send("Error en la consulta de count ",err);
+        }else{ 
+            total= result[0].total
+            // console.log("total: "+total);
+        }
+    });
     
      
-    console.log("Consulta total Registro: "+consultaTotalRegistro+";");
-    console.log("Consulta con condición: "+consulta+condicion+";");
-    conexionbd.query(consulta+condicion+";", (err, result, fields)=>{
+    // console.log("Consulta total Registro: "+consultaTotalRegistro+";");
+    //console.log("Consulta con condición: "+consulta+condicion+";");
+
+    conexionbd.query(consulta+condicion+limite+";", (err, result, fields)=>{
         if(err){
             console.log("Hubo un error en la consulta", err);
             return res.status(404).send("Erro en la consulta ",err);
         }else{
-            result.forEach((value)=>{console.log(value.titulo);});
+            // var cont = 0;
+            // result.forEach((value)=>{console.log(value.titulo);cont++;});
+            // console.log(cont);
             let response = {
                 peliculas : result,
-                total : cantidad*Math.ceil(743 / cantidad) // Math.ceil(total / cantidad_por_pagina);
+                total : total//cantidad*Math.ceil(total / cantidad)
             }
-            //res.send(JSON.stringify(result));
             res.send(response);
         }
     });

@@ -14,6 +14,12 @@ app.use(bodyParser.urlencoded({
 
 app.use(bodyParser.json());
 
+// app.get('/', (req, res)=>{
+//   res.render('../cliente/html/index', function (err, html) {
+//     res.send(html)
+//   })
+// });
+
 app.get('/peliculas', controler.peliculas );
 app.get('/peliculas/:id', controler.pelicula );
 //app.get('/peliculas/:id', controler.pelicula );
