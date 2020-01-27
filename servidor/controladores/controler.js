@@ -13,9 +13,6 @@ peliculas =(req, res)=>{
     let limite="";
     let filtros = [];
     let pedir = "SELECT";
-    let campos = " id, titulo, duracion, director, anio, fecha_lanzamiento, puntuacion, poster, trama, genero_id";
-    // let todosLosCampos = " *";
-    //let consulta = "SELECT";
     let totalRegistro=" COUNT(*) AS total";
     let deTabla =" FROM pelicula";
     let consulta = pedir+" *"+deTabla;
@@ -42,13 +39,12 @@ peliculas =(req, res)=>{
 
     if(columna_orden!== undefined && tipo_orden!== undefined){
         condicion += " ORDER BY "+columna_orden+" "+tipo_orden;
-        console.log("columna orden");
+        // console.log("columna orden: "+ condicion);
     }
     if(pagina!== undefined && cantidad!== undefined){
         limite =" LIMIT "+((pagina-1)*cantidad)+", "+cantidad;
-        //condicion +=" "+limite;
-        console.log("Pagina: "+pagina);
-        console.log("Condicion: "+condicion);
+        // console.log("Pagina: "+pagina);
+        // console.log("Condicion: "+condicion);
     }
 
     // guarda una consulta que devuelve el numero total de registros según condiciones de filtros seleccionados
@@ -60,26 +56,26 @@ peliculas =(req, res)=>{
             console.log("Hubo un error en la consulta de count", err);
             return res.status(404).send("Error en la consulta de count ",err);
         }else{ 
-            total= result[0].total
+            totalPeliculas= result[0].total
             // console.log("total: "+total);
         }
     });
     
      
     // console.log("Consulta total Registro: "+consultaTotalRegistro+";");
-    //console.log("Consulta con condición: "+consulta+condicion+";");
+    console.log("Consulta con condición: "+consulta+condicion+limite+";");
 
     conexionbd.query(consulta+condicion+limite+";", (err, result, fields)=>{
         if(err){
             console.log("Hubo un error en la consulta", err);
             return res.status(404).send("Erro en la consulta ",err);
         }else{
-            // var cont = 0;
-            // result.forEach((value)=>{console.log(value.titulo);cont++;});
-            // console.log(cont);
+            var cont = 0;
+            result.forEach((value)=>{console.log(value.titulo+" , puntaje: "+value.puntuacion+", "+value.anio);cont++;});
+            console.log(cont);
             let response = {
                 peliculas : result,
-                total : total//cantidad*Math.ceil(total / cantidad)
+                total : totalPeliculas//cantidad*Math.ceil(totalPeliculas / cantidad)
             }
             res.send(response);
         }
