@@ -1,4 +1,15 @@
+CREATE TABLE `actor` ( 
+	`id` INT NOT NULL AUTO_INCREMENT , 
+	`nombre` VARCHAR(70) NOT NULL ,  
+	PRIMARY KEY (`id`(11))
+	);
 
+CREATE TABLE `actor_pelicula` ( 
+	`id` INT NOT NULL AUTO_INCREMENT , 
+	`actor_id` INT(11) NOT NULL , 
+	`pelicula_id` INT(11) NOT NULL , 
+	PRIMARY KEY (`id`(11))
+	);
 
 INSERT INTO `actor` (`id`, `nombre`)
 VALUES

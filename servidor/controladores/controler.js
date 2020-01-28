@@ -84,7 +84,11 @@ peliculas =(req, res)=>{
 
 pelicula =(req, res)=>{
     let id = req.params.id
-    let query = "SELECT * FROM pelicula WHERE id="+id;
+
+    let query=  "SELECT p.*, g.nombre As genero, a.nombre FROM pelicula AS p JOIN genero AS g ON p.genero_id = g.id JOIN actor_pelicula AS a_p ON a_p.pelicula_id = p.id JOIN actor AS a ON a_p.actor_id = a.id WHERE p.id ="+id;
+
+
+    //let query = "SELECT * FROM pelicula WHERE id="+id;
     conexionbd.query(query+";", (err, result, fields)=>{
         if(err){
             console.log("Hubo un error en la consulta", err.menssage);
@@ -94,10 +98,50 @@ pelicula =(req, res)=>{
             console.log("No se encontro ningún registro con ese id");
             return res.status(404).send("No se encontró ningún registro con es id");
         }else{
-            res.send(JSON.stringify(result[0]));
+            console.log(query);
+            var data = result[0];       
+
+            // let arrayActores = [];
+            // result.forEach((value, i)=>{arrayActores.push(value.nombre); console.log(value.nombre+":"+i)});
+            // console.log(arrayActores);
+
+            let response = {
+                pelicula : {
+                    titulo : data.titulo,
+                    anio : data.anio,
+                    puntuacion : data.puntuacion,
+                    duracion : data.duracion,
+                    trama : data.trama,
+                    poster : data.poster,
+                    fecha_lanzamiento : data.fecha_lanzamiento,
+                    director : data.director,
+                    nombre : data.genero
+                    
+                },
+                actores : result     
+            }
+            res.send(response);
         }
     });
 }
+
+// primera versión
+// pelicula =(req, res)=>{
+//     let id = req.params.id
+//     let query = "SELECT * FROM pelicula WHERE id="+id;
+//     conexionbd.query(query+";", (err, result, fields)=>{
+//         if(err){
+//             console.log("Hubo un error en la consulta", err.menssage);
+//             return res.status(404).send("Error en la consulta ",err);
+//         }
+//         if(result.length == 0){
+//             console.log("No se encontro ningún registro con ese id");
+//             return res.status(404).send("No se encontró ningún registro con es id");
+//         }else{
+//             res.send(JSON.stringify(result[0]));
+//         }
+//     });
+// }
 
 generos =(req, res)=>{
     const consulta = "SELECT * FROM genero";
