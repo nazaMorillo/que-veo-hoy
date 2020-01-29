@@ -14,15 +14,9 @@ app.use(bodyParser.urlencoded({
 
 app.use(bodyParser.json());
 
-// app.get('/', (req, res)=>{
-//   res.render('../cliente/html/index', function (err, html) {
-//     res.send(html)
-//   })
-// });
-
 app.get('/peliculas', controler.peliculas );
+app.get('/peliculas/recomendacion', controler.recomendacion );
 app.get('/peliculas/:id', controler.pelicula );
-//app.get('/peliculas/:id', controler.pelicula );
 app.get('/generos', controler.generos );
 
 //seteamos el puerto en el cual va a escuchar los pedidos la aplicación

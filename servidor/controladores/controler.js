@@ -16,9 +16,7 @@ peliculas =(req, res)=>{
     let totalRegistro=" COUNT(*) AS total";
     let deTabla =" FROM pelicula";
     let consulta = pedir+" *"+deTabla;
-    let condicion = "";
-
-    
+    let condicion = "";   
 
     if(titulo!== undefined){filtros.push("titulo LIKE '%" + titulo + "%'");}
     if(anio!== undefined){filtros.push("anio = " + anio);}
@@ -30,8 +28,7 @@ peliculas =(req, res)=>{
             sumaFiltro+=filtro+" ";
             if(pos < filtros.length-1){
                 sumaFiltro+="AND ";
-            }            
-            //console.log(condition);
+            } 
         });
         condicion += " WHERE "+sumaFiltro;
         console.log("Consulta con WERE : "+condicion); 
@@ -39,12 +36,10 @@ peliculas =(req, res)=>{
 
     if(columna_orden!== undefined && tipo_orden!== undefined){
         condicion += " ORDER BY "+columna_orden+" "+tipo_orden;
-        // console.log("columna orden: "+ condicion);
     }
+
     if(pagina!== undefined && cantidad!== undefined){
         limite =" LIMIT "+((pagina-1)*cantidad)+", "+cantidad;
-        // console.log("Pagina: "+pagina);
-        // console.log("Condicion: "+condicion);
     }
 
     // guarda una consulta que devuelve el numero total de registros según condiciones de filtros seleccionados
@@ -57,13 +52,10 @@ peliculas =(req, res)=>{
             return res.status(404).send("Error en la consulta de count ",err);
         }else{ 
             totalPeliculas= result[0].total
-            // console.log("total: "+total);
         }
     });
     
-     
-    // console.log("Consulta total Registro: "+consultaTotalRegistro+";");
-    console.log("Consulta con condición: "+consulta+condicion+limite+";");
+    // console.log("Consulta con condición: "+consulta+condicion+limite+";");
 
     conexionbd.query(consulta+condicion+limite+";", (err, result, fields)=>{
         if(err){
@@ -75,7 +67,7 @@ peliculas =(req, res)=>{
             console.log(cont);
             let response = {
                 peliculas : result,
-                total : totalPeliculas//cantidad*Math.ceil(totalPeliculas / cantidad)
+                total : totalPeliculas
             }
             res.send(response);
         }
@@ -84,11 +76,10 @@ peliculas =(req, res)=>{
 
 pelicula =(req, res)=>{
     let id = req.params.id
-
+    // Esta consulta está definida así para diferenciar en la respuesta a la columna nombre de la tabla actor
+    // de la columna nombre de la tabla genero
     let query=  "SELECT p.*, g.nombre As genero, a.nombre FROM pelicula AS p JOIN genero AS g ON p.genero_id = g.id JOIN actor_pelicula AS a_p ON a_p.pelicula_id = p.id JOIN actor AS a ON a_p.actor_id = a.id WHERE p.id ="+id;
 
-
-    //let query = "SELECT * FROM pelicula WHERE id="+id;
     conexionbd.query(query+";", (err, result, fields)=>{
         if(err){
             console.log("Hubo un error en la consulta", err.menssage);
@@ -99,11 +90,7 @@ pelicula =(req, res)=>{
             return res.status(404).send("No se encontró ningún registro con es id");
         }else{
             console.log(query);
-            var data = result[0];       
-
-            // let arrayActores = [];
-            // result.forEach((value, i)=>{arrayActores.push(value.nombre); console.log(value.nombre+":"+i)});
-            // console.log(arrayActores);
+            var data = result[0];
 
             let response = {
                 pelicula : {
@@ -125,23 +112,41 @@ pelicula =(req, res)=>{
     });
 }
 
-// primera versión
-// pelicula =(req, res)=>{
-//     let id = req.params.id
-//     let query = "SELECT * FROM pelicula WHERE id="+id;
-//     conexionbd.query(query+";", (err, result, fields)=>{
-//         if(err){
-//             console.log("Hubo un error en la consulta", err.menssage);
-//             return res.status(404).send("Error en la consulta ",err);
-//         }
-//         if(result.length == 0){
-//             console.log("No se encontro ningún registro con ese id");
-//             return res.status(404).send("No se encontró ningún registro con es id");
-//         }else{
-//             res.send(JSON.stringify(result[0]));
-//         }
-//     });
-// }
+recomendacion =(req, res)=>{
+    let filtros= [];
+    let genero = req.query.genero;
+    let anio_inicio = req.query.anio_inicio;
+    let anio_fin = req.query.anio_fin;
+    let puntaje = req.query.puntaje;
+
+    let sql = "SELECT * FROM pelicula AS p JOIN genero AS g ON g.id = p.genero_id";
+
+    if(genero!== undefined){filtros.push("g.nombre = '" + genero+"'");}
+    if(anio_inicio!== undefined){filtros.push("anio >= " + anio_inicio);}
+    if(anio_fin!== undefined){filtros.push("anio <= " + anio_fin);}
+    if(puntaje!== undefined){filtros.push("puntaje >= " + puntaje);}
+
+    let sumaFiltro ="";
+    if(filtros.length > 0 ){
+        filtros.forEach(function(filtro, pos){
+            sumaFiltro+=filtro+" ";
+            if(pos < filtros.length-1){
+                sumaFiltro+="AND ";
+            } 
+        });
+        sql += " WHERE "+sumaFiltro;
+    }
+    console.log(sql);
+    conexionbd.query(sql+";", (err, result)=>{
+        if(err){
+            console.log("Hubo un error en la consulta", err.menssage);
+            return res.status(404).send("Erro en la consulta ",err);
+        }else{
+            let response = {peliculas : result}        
+            res.send(response);
+        }
+    });
+}
 
 generos =(req, res)=>{
     const consulta = "SELECT * FROM genero";
@@ -161,5 +166,6 @@ generos =(req, res)=>{
 module.exports={
     peliculas : peliculas,
     pelicula : pelicula,
-    generos : generos
+    generos : generos,
+    recomendacion : recomendacion
 };
